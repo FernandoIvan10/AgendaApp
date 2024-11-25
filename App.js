@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button, StyleSheet, Text, View, Modal, TextInput } from 'react-native';
+import { Button, StyleSheet, Text, View, Modal, TextInput, FlatList, Pressable, SafeAreaView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function App() {
   // Hooks
@@ -16,6 +16,8 @@ export default function App() {
   const [contactos, setContactos] = useState([]);
   // modal
   const [modalVisible, setModalVisible] = useState(false);
+  // índice de edición
+  const [indiceEdicion, setIndiceEdicion] = useState(null);
 
   // Método para abrir el Modal
   const abrirModal = () => {
@@ -39,50 +41,107 @@ export default function App() {
       telefono:'',
       descripcion:'',
     })
+    // Se resetea el índice de edición
+    setIndiceEdicion(null);
   }
 
-  // Método para guardar un nuevo contacto
+  // Método para guardar un nuevo contacto o editar uno existente
   const guardarContacto = () => {
+    // Valida que el usuario haya rellenado todos los campos
     if(contacto.nombre != '' && contacto.telefono != '' && contacto.descripcion != ''){
-      setContactos([...contactos, contacto])
-      cerrarModal()
+      // Verifica si está en modo edición
+      if (indiceEdicion !== null) {
+        // Actualiza el contacto en la lista
+        const _contactos = [...contactos];
+        _contactos[indiceEdicion] = contacto;
+        setContactos(_contactos);
+      } else {
+        // Agrega el nuevo contacto
+        setContactos([...contactos, contacto]);
+      }
+      // Cierra el modal
+      cerrarModal();
+      // Muestra un mensaje al usuario
       Toast.show({
         type: 'success',
-        text1: 'Contacto guardado exitosamente',
+        text1: indiceEdicion !== null ? 'Contacto editado exitosamente' : 'Contacto guardado exitosamente',
       });
     }else{
+      // Le pide al usuario que llene todos los campos
       Toast.show({
         type: 'error',
         text1: 'Por favor, llena todos los campos',
       })
     }
-    
+  }
+
+  // Componente que representa una tarjeta de contacto
+  const Tarjeta = ({contacto, index})=>{
+    return(
+      // View que contiene todo el contenido
+      <View style={styles.tarjeta}>
+          {/* Muestra el nombre del contacto */}
+          <Text>{contacto.nombre}</Text>
+          {/* Muestra el nombre del contacto */}
+          <Text>{contacto.telefono}</Text>
+          {/* Muestra la descripción del contacto */}
+          <Text>{contacto.descripcion}</Text>
+          {/* Ícono para eliminar la tarea */}
+          <Pressable onPress={()=>eliminarContacto(index)}>
+              <FontAwesome name="trash-o" size={32} color="blue"></FontAwesome>
+          </Pressable>
+          {/* Ícono para editar la tarea */}
+          <Pressable onPress={()=>manejarEdicion(contacto, index)}>
+              <FontAwesome name="pencil" size={32} color="blue"></FontAwesome>
+          </Pressable>
+      </View>
+    )
+  }
+
+  // método que elimina una tarea
+  const eliminarContacto=(index)=>{
+    // Se filtra la lista de contactos y se guarda el resultado
+    const _contactos = contactos.filter((_, id)=>id!==index);
+    // El resultado del filtrado se asigna al hook de contactos
+    setContactos(_contactos)
+  }
+
+  // método que maneja la edición de un contacto
+  const manejarEdicion=(contacto, index)=>{
+    // Se actualiza el hook contacto con el objeto recibido
+    setContacto({...contacto});
+    // Se actualiza el índice del contacto en edición
+    setIndiceEdicion(index);
+    // Se muestra el modal para editar el contacto
+    setModalVisible(true);
   }
 
   // Renderizado del componente
   return (
     <SafeAreaProvider>
       {/* View que contiene la screen principal */}
-      <View style={styles.contenedor}>
+      <SafeAreaView style={styles.contenedor}>
         {/* Título */}
         <Text style={styles.titulo}>Agenda</Text>
+
         {/* Botón para agregar un nuevo contacto */}
         <Button
           onPress={abrirModal}
           title='Nuevo contacto'
           color='#000000'
         />
+        {/* Modal que contiene el formulario para agregar un contacto */}
         <Modal
           animationType="fade"
           trasnparent={true}
           visible={modalVisible}
           onRequestClose={cerrarModal}
         >
-          <View>
+          <SafeAreaView>
             {/*Toast que muestra mensajes al usuario */}
             <Toast />
             {/* Título */}
-            <Text style={styles.titulo}>Nuevo contacto</Text>
+            <Text style={styles.titulo}>{indiceEdicion !== null ? 'Editar contacto' : 'Nuevo contacto'}</Text>
             {/* Contenedor para los campos */}
             <View>
               {/* Campo para agregar el nombre */}
@@ -118,9 +177,15 @@ export default function App() {
                 color='#000000'
               />
             </View>
-          </View>
+          </SafeAreaView>
         </Modal>
-      </View>
+        {/* Lista de contactos */}
+        <FlatList
+          data={contactos}
+          renderItem={({item, index})=><Tarjeta contacto={item} index={index} />}
+          keyExtractor={(item, index)=>index.toString()}
+        />
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }
@@ -138,5 +203,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-
+  // Estilos de la tarjeta de contacto
+  tarjeta:{
+    backgroundColor: 'lightgray',
+    marginVertical: 8,
+    marginHorizontal: 16,
+    padding: 10,
+    borderRadius: 10
+  },
 });
