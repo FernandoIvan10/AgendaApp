@@ -43,9 +43,13 @@ export default function App() {
 
   // Método para guardar un nuevo contacto
   const guardarContacto = () => {
-    if(contacto.nombre && contacto.telefono && contacto.descripcion){
+    if(contacto.nombre != '' && contacto.telefono != '' && contacto.descripcion != ''){
       setContactos([...contactos, contacto])
       cerrarModal()
+      Toast.show({
+        type: 'success',
+        text1: 'Contacto guardado exitosamente',
+      });
     }else{
       Toast.show({
         type: 'error',
@@ -75,6 +79,8 @@ export default function App() {
           onRequestClose={cerrarModal}
         >
           <View>
+            {/*Toast que muestra mensajes al usuario */}
+            <Toast />
             {/* Título */}
             <Text style={styles.titulo}>Nuevo contacto</Text>
             {/* Contenedor para los campos */}
