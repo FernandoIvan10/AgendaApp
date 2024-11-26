@@ -82,20 +82,20 @@ export default function App() {
       <View style={styles.tarjeta}>
         <View style={styles.infoTarjeta}>
           {/* Muestra el nombre del contacto */}
-          <Text style={styles.textoTarjeta}>{contacto.nombre}</Text>
+          <Text style={styles.textoNombre}>{contacto.nombre}</Text>
           {/* Muestra el nombre del contacto */}
           <Text style={styles.textoTarjeta}>{contacto.telefono}</Text>
           {/* Muestra la descripción del contacto */}
           <Text style={styles.textoTarjeta}>{contacto.descripcion}</Text>
         </View>
-        <View style={styles.iconsContainer}>
+        <View style={styles.contenedorIconos}>
           {/* Ícono para eliminar la tarea */}
           <Pressable onPress={()=>eliminarContacto(index)}>
-              <FontAwesome name="trash-o" size={32} color="#000"></FontAwesome>
+              <FontAwesome name="trash-o" size={32} color="#D32626"></FontAwesome>
           </Pressable>
           {/* Ícono para editar la tarea */}
           <Pressable onPress={()=>manejarEdicion(contacto, index)}>
-              <FontAwesome name="pencil" size={32} color="#000"></FontAwesome>
+              <FontAwesome name="pencil" size={32} color="#AA5486"></FontAwesome>
           </Pressable>
         </View>
       </View>
@@ -126,46 +126,54 @@ export default function App() {
       {/* View que contiene la screen principal */}
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.contenedorTituloBoton}>
+        <View style={styles.contenedorTitulo}>
         {/* Título */}
         <Text style={styles.titulo}>Agenda</Text>
+        </View>
         {/* Botón para agregar un nuevo contacto */}
         <Button
           onPress={abrirModal}
           title='Nuevo contacto'
-          color='#000000'
+          style={styles.button}
+          color='#4E9F3D'
         />
         </View>
         {/* Modal que contiene el formulario para agregar un contacto */}
         <Modal
           animationType="fade"
-          trasnparent={true}
+          transparent={true}
           visible={modalVisible}
           onRequestClose={cerrarModal}
         >
+          <View style={styles.contenedorModal}>
           <SafeAreaView style={styles.modal}>
-            {/*Toast que muestra mensajes al usuario */}
-            <Toast />
+          
+          <View style={styles.contenedorTituloModal}>
             {/* Título */}
             <Text style={styles.titulo}>{indiceEdicion !== null ? 'Editar contacto' : 'Nuevo contacto'}</Text>
+          </View>
             {/* Contenedor para los campos */}
-            <View style={styles.campos}>
+            <View style={styles.contenedorCampos}>
               {/* Campo para agregar el nombre */}
               <TextInput
                 value={contacto.nombre}
                 onChangeText={(value)=> manejarCambio('nombre', value)}
                 placeholder='Nombre'
+                style={styles.campos}
               />
               {/* Campo para agregar el número de teléfono */}
               <TextInput
                 value={contacto.telefono}
                 onChangeText={(value)=> manejarCambio('telefono', value)}
                 placeholder='Teléfono'
+                style={styles.campos}
               />
               {/* Campo para agregar la descripción */}
               <TextInput
                 value={contacto.descripcion}
                 onChangeText={(value)=> manejarCambio('descripcion', value)}
                 placeholder='Descripción'
+                style={styles.campos}
               />
             </View>
             <View style={styles.botones}>
@@ -173,16 +181,17 @@ export default function App() {
               <Button
                 onPress={cerrarModal}
                 title='Cancelar'
-                color='#000000'
+                color='#D32626'
               />
               {/* Botón para guardar el nuevo contacto */}
               <Button
                 onPress={guardarContacto}
                 title='Guardar'
-                color='#000000'
+                color='#79D70F'
               />
             </View>
           </SafeAreaView>
+          </View>
         </Modal>
         <View style={styles.listaContactos}>
         {/* Lista de contactos */}
@@ -192,122 +201,152 @@ export default function App() {
           keyExtractor={(item, index)=>index.toString()}
         />
         </View>
+        {/*Toast que muestra mensajes al usuario */}
+        <Toast />
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  // Estilos del SafeAreaProvider
-  safeAreaProvider: {
-    flex: 1,
-  },
-
-  // Estilos del SafeAreaView
-  safeAreaView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-
-  // Estilos del contenedor del modal
-  modal: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 20,
-  },
-
-  // Estilos para los campos del formulario
-  campos: {
-    width: '100%',
-    marginVertical: 10,
-  },
-
-  // Estilos para los botones dentro del modal
-  botones: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    width: '100%',
-  },
-
   // Estilos de la tarjeta de contacto
   tarjeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
     marginBottom: 10,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#4E9F3D',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
   },
+  // Estilos del contenido de la tarjeta
   infoTarjeta: {
     flex: 1,
     justifyContent: 'flex-start',
   },
+  // Estilo del nombre del contacto
+  textoNombre:{
+    marginBottom: 5,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginLeft: 10,
+  },
+  // Estilo del texto de la tarjeta
   textoTarjeta: {
     marginBottom: 5,
-    fontSize: 14,
+    fontSize: 15,
+    color: '#fff',
+    marginLeft: 15,
   },
-  iconsContainer: {
+  // Estilos del contenedor de iconos de la tarjeta
+  contenedorIconos: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',
     width: 80,
   },
+
+  // Estilos del SafeAreaProvider
+  safeAreaProvider: {
+    flex: 1,
+  },
+  // Estilos del SafeAreaView
+  safeAreaView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#FFF',
+  },
+
   // Estilos del contenedor del título y botón de la pantalla principal
   contenedorTituloBoton: {
     marginTop: 40,
-    width: '100%',
+    width: '110%',
     alignItems: 'center',
     marginVertical: 20,
   },
+  // Estilos del contenedor del título
+  contenedorTitulo:{
+    backgroundColor: '#1E5128',
+    width: '100%',
+    marginBottom: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Estilo de los títulos
   titulo: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    marginTop: 20,
+    color: '#fff',
   },
+
+  // Estilos del contenedor del modal
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 0,
+    marginHorizontal: 20,
+    width: '90%',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  // Contenedor principal para centrar el modal
+  contenedorModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  // Estilos del contenedor del título
+  contenedorTituloModal:{
+    backgroundColor: '#4E9F3D',
+    width: '100%',
+    marginBottom: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 0, // Asegura que no intente compartir espacio adicional
+    alignSelf: 'stretch', // Garantiza que ocupe todo el ancho
+  },
+
+  // Estilos para el contenedor de campos del formulario
+  contenedorCampos: {
+    width: '100%',
+    marginLeft: 20,
+  },
+  // Estilo para los campos del formulario
+  campos:{
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: '94%',
+    marginBottom: 15,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  // Estilos para el contenedor de botones dentro del modal
+  botones: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 10,
+    width: '100%',
+    marginBottom: 20,
+  },
+  
   // Estilos de la lista de contactos
   listaContactos: {
     width: '100%',
     flex: 1,
     marginTop: 20,
-  },
-
-  // Estilos de los textos
-  text: {
-    fontSize: 16,
-    marginVertical: 5,
-  },
-
-  // Estilos para los campos de texto de entrada
-  input: {
-    width: '100%',
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingLeft: 10,
-    marginBottom: 10,
-  },
-
-  // Estilos del botón
-  button: {
-    width: '45%',
-    backgroundColor: '#2196F3',
-    padding: 10,
-    borderRadius: 5,
-  },
-
-  // Estilos de los iconos
-  icon: {
-    marginLeft: 10,
-    marginTop: 5,
   },
 });
